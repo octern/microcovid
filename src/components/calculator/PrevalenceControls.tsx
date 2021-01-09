@@ -210,7 +210,7 @@ export const PrevalenceControls: React.FunctionComponent<{
       <header id="location">
         <Trans>calculator.location_selector_header</Trans>
       </header>
-      <div className="form-group">
+      <div className="form-group" hidden={isManualEntryCurrently}>
         <select
           className="form-control form-control-lg"
           value={data.topLocation}
@@ -221,9 +221,6 @@ export const PrevalenceControls: React.FunctionComponent<{
         >
           <option value="">
             {t('calculator.select_location_placeholder')}
-          </option>
-          <option value={TOP_LOCATION_MANUAL_ENTRY}>
-            {t('calculator.select_location_enter_manually')}
           </option>
           {Object.keys(locationGroups).map((groupName, groupInd) => (
             <optgroup key={groupInd} label={groupName}>
@@ -284,70 +281,74 @@ export const PrevalenceControls: React.FunctionComponent<{
         open={detailsOpen}
         setter={setDetailsOpen}
       >
-        {!isManualEntryCurrently && <PrevalenceResult data={data} />}
-
-        <PrevalenceField
-          id="reported-cases"
-          label={t('calculator.prevalence.last_week_cases')}
-          value={data.casesPastWeek || 0}
-          setter={(value) =>
-            setter({ ...data, casesPastWeek: parseInt(value || '') })
-          }
-          inputType="number"
-          isEditable={!locationSet}
-          className="hide-number-buttons"
-        />
-        <PrevalenceField
-          id="population"
-          label={t('calculator.prevalence.population')}
-          value={data.population}
-          setter={(value) => setter({ ...data, population: value })}
-          inputType="text"
-          isEditable={!locationSet}
-          className="hide-number-buttons"
-        />
-        {locationSet && data.casesIncreasingPercentage === 0 ? (
-          <div>{t('calculator.prevalence.cases_stable_or_decreasing')}</div>
+        {!isManualEntryCurrently ? (
+          <PrevalenceResult data={data} />
         ) : (
-          <PrevalenceField
-            id="precent-increase"
-            label={t('calculator.prevalence.percent_increase_in_cases')}
-            value={data.casesIncreasingPercentage}
-            unit="%"
-            setter={(value) => {
-              setter({ ...data, casesIncreasingPercentage: Number(value) })
-            }}
-            inputType="number"
-            min={0}
-            isEditable={!locationSet}
-            className="hide-number-buttons"
-          />
-        )}
-        {data.positiveCasePercentage === null ? (
-          <PrevalenceField
-            id="positive-test-rate"
-            label={t('calculator.prevalence.positive_case_percentage')}
-            value="no data available"
-            unit="%"
-            setter={(_value) => null}
-            inputType="text"
-            isEditable={false}
-          />
-        ) : (
-          <PrevalenceField
-            id="positive-test-rate"
-            label={t('calculator.prevalence.positive_case_percentage')}
-            value={data.positiveCasePercentage.toString()}
-            unit="%"
-            setter={(value) => {
-              setter({ ...data, positiveCasePercentage: Number(value) })
-            }}
-            inputType="number"
-            max={100}
-            min={0}
-            isEditable={!locationSet}
-            className="hide-number-buttons"
-          />
+          <div id="prevalence-fields">
+            <PrevalenceField
+              id="reported-cases"
+              label={t('calculator.prevalence.last_week_cases')}
+              value={data.casesPastWeek || 0}
+              setter={(value) =>
+                setter({ ...data, casesPastWeek: parseInt(value || '') })
+              }
+              inputType="number"
+              isEditable={!locationSet}
+              className="hide-number-buttons"
+            />
+            <PrevalenceField
+              id="population"
+              label={t('calculator.prevalence.population')}
+              value={data.population}
+              setter={(value) => setter({ ...data, population: value })}
+              inputType="text"
+              isEditable={!locationSet}
+              className="hide-number-buttons"
+            />
+            {locationSet && data.casesIncreasingPercentage === 0 ? (
+              <div>{t('calculator.prevalence.cases_stable_or_decreasing')}</div>
+            ) : (
+              <PrevalenceField
+                id="percent-increase"
+                label={t('calculator.prevalence.percent_increase_in_cases')}
+                value={data.casesIncreasingPercentage}
+                unit="%"
+                setter={(value) => {
+                  setter({ ...data, casesIncreasingPercentage: Number(value) })
+                }}
+                inputType="number"
+                min={0}
+                isEditable={!locationSet}
+                className="hide-number-buttons"
+              />
+            )}
+            {data.positiveCasePercentage === null ? (
+              <PrevalenceField
+                id="positive-test-rate"
+                label={t('calculator.prevalence.positive_case_percentage')}
+                value="no data available"
+                unit="%"
+                setter={(_value) => null}
+                inputType="text"
+                isEditable={false}
+              />
+            ) : (
+              <PrevalenceField
+                id="positive-test-rate"
+                label={t('calculator.prevalence.positive_case_percentage')}
+                value={data.positiveCasePercentage.toString()}
+                unit="%"
+                setter={(value) => {
+                  setter({ ...data, positiveCasePercentage: Number(value) })
+                }}
+                inputType="number"
+                max={100}
+                min={0}
+                isEditable={!locationSet}
+                className="hide-number-buttons"
+              />
+            )}
+          </div>
         )}
         {!locationSet ? null : (
           <>
